@@ -24,7 +24,7 @@ export const ExpenceResult = (props: Props) => {
       .filter((d) => !expenceSet.has(d.大項目))
       .filter((d) => !expenceSubSet.has(d.中項目))
       .filter((d) => !!parseInt(d["金額（円）"]));
-    const special = data.filter((d) => !!parseInt(d.メモ));
+    const special = filtered.filter((d) => !!parseInt(d.メモ));
 
     const specialTotal = special.reduce(
       (p, c) => p + parseInt(c["金額（円）"]),
