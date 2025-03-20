@@ -1,0 +1,24 @@
+{
+  "name": "moneyforward-expense-calculator-extension",
+  "version": "1.0.0",
+  "description": "MoneyForwardの家計簿ページを開いたら自動的に経費計算を行い、パートナーとの支払い負担を分配する拡張機能",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.9",
+    "@mui/material": "^5.14.9",
+    "papaparse": "^5.4.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.246",
+    "@types/node": "^20.5.9",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
+  }
+}

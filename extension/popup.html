@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoneyForward 経費計算</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+  <style>
+    body {
+      width: 400px;
+      min-height: 300px;
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+    }
+    .container {
+      padding: 16px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 16px;
+    }
+    .tab {
+      padding: 8px 16px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    .tab.active {
+      border-bottom-color: #1976d2;
+      color: #1976d2;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .row {
+      display: flex;
+      margin-bottom: 8px;
+    }
+    .label {
+      width: 200px;
+    }
+    .value {
+      font-weight: bold;
+    }
+    .button {
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: #1565c0;
+    }
+    .input-group {
+      margin-bottom: 16px;
+    }
+    .input-label {
+      display: block;
+      margin-bottom: 4px;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .tag {
+      background-color: #e0e0e0;
+      padding: 4px 8px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+    }
+    .tag-remove {
+      margin-left: 4px;
+      cursor: pointer;
+    }
+    .status-message {
+      margin-top: 16px;
+      padding: 8px;
+      border-radius: 4px;
+    }
+    .status-message.success {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+    .status-message.error {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+    .status-message.info {
+      background-color: #e3f2fd;
+      color: #1565c0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>MoneyForward 経費計算</h2>
+    </div>
+    
+    <div class="status-message info" id="status-message">
+      MoneyForwardの家計簿ページを開くと自動的に計算されます
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="results">結果</div>
+      <div class="tab" data-tab="settings">設定</div>
+    </div>
+
+    <div class="tab-content active" id="results-tab">
+      <div class="card">
+        <div class="row">
+          <div class="label">経費合計:</div>
+          <div class="value" id="total-expense">0 円</div>
+        </div>
+        <div class="row">
+          <div class="label" id="partner-payment-label">パートナー支払い:</div>
+          <div class="value" id="partner-payment">0 円</div>
+        </div>
+        <div class="row">
+          <div class="label" id="partner-paid-label">パートナー持ち出し:</div>
+          <div class="value" id="partner-paid">0 円</div>
+        </div>
+        <div class="row">
+          <div class="label" id="partner-shortage-label">パートナー不足:</div>
+          <div class="value" id="partner-shortage">0 円</div>
+        </div>
+      </div>
+      
+      <button class="button" id="refresh-button">データを更新</button>
+    </div>
+
+    <div class="tab-content" id="settings-tab">
+      <div class="input-group">
+        <label class="input-label">割合設定</label>
+        <input type="number" id="rate-input" min="0" max="1" step="0.01" value="0.5">
+      </div>
+      
+      <div class="input-group">
+        <label class="input-label">パートナー名</label>
+        <input type="text" id="partner-name-input" value="パートナー">
+      </div>
+      
+      <div class="input-group">
+        <label class="input-label">経費大項目設定</label>
+        <div class="tag-container" id="expense-categories"></div>
+        <div style="display: flex; margin-top: 8px;">
+          <input type="text" id="expense-category-input" placeholder="追加する項目">
+          <button class="button" style="margin-left: 8px;" id="add-expense-category">追加</button>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <label class="input-label">経費中項目設定</label>
+        <div class="tag-container" id="expense-subcategories"></div>
+        <div style="display: flex; margin-top: 8px;">
+          <input type="text" id="expense-subcategory-input" placeholder="追加する項目">
+          <button class="button" style="margin-left: 8px;" id="add-expense-subcategory">追加</button>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <label class="input-label">パートナー金融機関設定</label>
+        <div class="tag-container" id="partner-accounts"></div>
+        <div style="display: flex; margin-top: 8px;">
+          <input type="text" id="partner-account-input" placeholder="追加する金融機関">
+          <button class="button" style="margin-left: 8px;" id="add-partner-account">追加</button>
+        </div>
+      </div>
+      
+      <button class="button" id="save-settings">設定を保存</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
